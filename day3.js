@@ -6,6 +6,8 @@ wire1 = wire1.split(',')
 
 let wire2 = 'L995,U122,R472,U470,R725,U906,L83,U672,R448,U781,L997,U107,R66,D966,L780,D181,L662,U158,R804,D837,L237,U164,L98,U582,R925,D806,L153,D843,R601,U941,L968,D528,R482,D586,R15,U370,L592,U836,R828,U676,R606,D20,R841,U117,L262,U377,R375,U503,R166,D398,R161,D9,R140,D188,R895,D226,R77,U28,L727,D72,L51,U425,R370,D377,L801,D525,R102,D568,L416,D300,R415,U199,R941,U211,R285,U719,L259,U872,L959,U350,L196,D830,R515,U899,R298,U875,R946,U797,R108,U461,R999,D49,L369,D472,R83,D265,L825,D163,R162,U906,L816,D241,L587,D801,R601,D630,R937,U954,L379,D347,R831,D337,L192,D649,L853,U270,R162,D892,L26,D663,L276,U891,R843,U67,R225,D88,R686,U662,R794,D814,L200,D887,R567,U363,L863,U16,R975,D470,R714,U771,L267,D402,R75,U98,L686,U565,R584,D402,L824,D927,R71,U39,L174,D494,L358,D626,R616,D369,R471,U881,L428,U53,R862,U749,L847,D944,L887,D695,R442,U870,L993,U315,L878,U100,L480,D354,L12,D533,L236,D364,R450,U679,L926,D391,R313,D953,L560,D740,L974,D119,L370,U404,R339,U233,R901,U514,R584,D495,R308,U170,R759,U592,R388,U396,R477,U670,R906,D687,L874,U352,R124,U700,R289,D524,L93,D817,R408,D776,L235,D928,L534,D296,R116,U995,L63,D903,R758,U881,L530,U498,R573,D626,L26,U269,R237,U287,L840,D603,R948,D567,R89,U552,L299,D774,R863,D182,R773,D108,L137,U88,L731,U793,L267,U902,L41,U258,L156,U361,R389,D839,L976,U960,L342,D489,R816,U391,L393,U601,R255,D629,R832,U877,L34,D373,L809,D679,L104,U901,R157,U468,R143,U896,L637,D577,L545,D486,L970,D130,L305,D909,R984,D500,L935,U949,R525,D547,L786,U106,L269,D511,L919'
 
+// let wire2 = 'U98,R91,D20,R16,D67,R40,U7,R15,U6,R7'
+
 wire2 = wire2.split(',')
 
 
@@ -51,12 +53,18 @@ const findIntersections = (wire1, wire2) => {
   const path1 = drawPath(wire1).slice(1)
   const path2 = drawPath(wire2).slice(1)
   const intersections = [];
+  const path1Steps = [];
+  const path2Steps = [];
   for (let pos of path1) {
-    if (path2.filter(pos2 => pos2[0] === pos[0] && pos2[1] === pos[1]).length) {
+    const path2Pos = path2.filter(pos2 => pos2[0] === pos[0] && pos2[1] === pos[1])[0]
+    if (path2Pos) {
       intersections.push(pos)
+      path1Steps.push(path1.indexOf(pos))
+      path2Steps.push(path2.indexOf(path2Pos))
     }
   }
-  return intersections
+  console.log([intersections, path1Steps, path2Steps]);
+  return [intersections, path1Steps, path2Steps]
 }
 
 const findMinDistance = intersections => {
@@ -64,9 +72,20 @@ const findMinDistance = intersections => {
   return Math.min(...distances)
 }
 
-const intersections = findIntersections(wire1, wire2)
+const [intersections, path1Steps, path2Steps] = findIntersections(wire1, wire2)
 
 console.log(findMinDistance(intersections))
 
 
 // Part 2
+
+const findMinSteps = (path1Steps, path2Steps) => {
+  let totalSteps = []
+  for (let i = 0; i < path1Steps.length; i++) {
+    totalSteps.push(path1Steps[i] + path2Steps[i])
+  }
+
+  return Math.min(...totalSteps) + 2 // +2 b/c i removed origin from each path
+}
+
+console.log(findMinSteps(path1Steps, path2Steps));
